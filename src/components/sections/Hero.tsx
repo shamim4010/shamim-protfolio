@@ -10,6 +10,7 @@ import {
   GitBranchPlus,
   Link,
 } from "lucide-react";
+import ParticleField from "../particle/ParticleField";
 
 const Hero = () => {
   const roles = [
@@ -52,8 +53,9 @@ const Hero = () => {
   }, [text, isDeleting]);
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#050505] flex items-center justify-center px-6">
+    <section className="relative min-h-screen overflow-hidden bg-[#050505] flex items-center justify-center px-6 py-28">
       {/* Background */}
+      <ParticleField />
       <div className="absolute inset-0 overflow-hidden">
         {/* Glow */}
         <div className="absolute top-[-10%] left-[10%] w-[700px] h-[700px] bg-[#00ff88]/10 blur-[150px] rounded-full" />
@@ -160,6 +162,8 @@ const Hero = () => {
 
           {/* RIGHT IMAGE */}
           <div className="relative flex justify-center items-center">
+
+            <ParticleField/>
 
             {/* MAIN GLOW */}
             <motion.div

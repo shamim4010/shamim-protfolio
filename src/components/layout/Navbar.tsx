@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const navLinks = [
   { name: "About", href: "#about" },
@@ -60,8 +61,8 @@ const Navbar = () => {
             {/* LOGO */}
             <Link href="/" className="group flex items-center gap-3">
               <div className="relative">
-                <div className="w-9 h-9 rounded-lg bg-[#00ff88] flex items-center justify-center rotate-3 group-hover:rotate-12 transition-transform duration-300 shadow-[0_0_25px_rgba(0,255,136,0.4)]">
-                  <span className="text-black font-bold text-lg">S</span>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center rotate-3 group-hover:rotate-12 transition-transform duration-300 ">
+                  <span className="text-black font-bold text-lg"><Image src="/logo.png" alt="Shamim" width={150} height={150} /></span>
                 </div>
 
                 {/* glow */}
