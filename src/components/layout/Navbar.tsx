@@ -19,6 +19,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  /* ---------------- SCROLL EFFECT ---------------- */
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -34,6 +35,19 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  /* ---------------- SCROLL LOCK (IMPORTANT FIX) ---------------- */
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <>
@@ -60,13 +74,14 @@ const Navbar = () => {
           >
             {/* LOGO */}
             <Link href="/" className="group flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center rotate-3 group-hover:rotate-12 transition-transform duration-300 ">
-                  <span className="text-black font-bold text-lg"><Image src="/logo.png" alt="Shamim" width={150} height={150} /></span>
-                </div>
-
-                {/* glow */}
-                <div className="absolute inset-0 blur-xl bg-[#00ff88]/30 opacity-0 group-hover:opacity-100 transition" />
+              <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="Shamim"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </div>
 
               <span className="text-xl font-bold tracking-tight text-white group-hover:text-[#00ff88] transition-colors">
@@ -90,12 +105,9 @@ const Navbar = () => {
 
               <Link
                 href="#contact"
-                className="relative px-6 py-2 bg-[#00ff88] text-black text-sm font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(0,255,136,0.3)]"
+                className="px-6 py-2 bg-[#00ff88] text-black text-sm font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(0,255,136,0.3)]"
               >
                 HIRE ME
-
-                {/* pulse glow */}
-                <span className="absolute inset-0 rounded-full animate-ping bg-[#00ff88]/30" />
               </Link>
             </div>
 
@@ -109,48 +121,83 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* MOBILE MENU */}
+        {/* ---------------- MOBILE MENU ---------------- */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-2xl flex flex-col items-center justify-center"
+              className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-3xl flex items-center justify-center"
               onClick={() => setMobileMenuOpen(false)}
             >
+              {/* glow background */}
+              <div className="absolute w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full animate-pulse" />
+
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="relative flex flex-col items-center gap-8"
+                initial="hidden"
+                animate="show"
+                exit="hidden"
+                variants={{
+                  hidden: {},
+                  show: {
+                    transition: {
+                      staggerChildren: 0.12,
+                    },
+                  },
+                }}
+                className="relative flex flex-col items-center gap-10"
                 onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  className="absolute -top-20 right-0 text-white"
+                {/* CLOSE */}
+                <motion.button
+                  whileHover={{ rotate: 90, scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => setMobileMenuOpen(false)}
+                  className="absolute -top-24 right-0 text-white p-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl"
                 >
                   <X size={28} />
-                </button>
+                </motion.button>
 
+                {/* LINKS */}
                 {navLinks.map((link) => (
-                  <Link
+                  <motion.div
                     key={link.name}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-3xl font-bold text-white hover:text-[#00ff88] transition"
+                    variants={{
+                      hidden: { opacity: 0, y: 40, filter: "blur(8px)" },
+                      show: {
+                        opacity: 1,
+                        y: 0,
+                        filter: "blur(0px)",
+                        transition: { duration: 0.6 },
+                      },
+                    }}
                   >
-                    {link.name}
-                  </Link>
+                    <Link
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-3xl font-bold text-white hover:text-[#00ff88] transition"
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
                 ))}
 
-                <Link
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="mt-6 px-8 py-3 bg-[#00ff88] text-black font-bold rounded-full shadow-[0_0_30px_rgba(0,255,136,0.3)]"
+                {/* CTA */}
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.8 },
+                    show: { opacity: 1, scale: 1 },
+                  }}
                 >
-                  HIRE ME
-                </Link>
+                  <Link
+                    href="#contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mt-6 px-8 py-3 bg-[#00ff88] text-black font-bold rounded-full shadow-[0_0_30px_rgba(0,255,136,0.3)]"
+                  >
+                    HIRE ME
+                  </Link>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}

@@ -30,10 +30,31 @@ const experiences = [
   },
 ];
 
+/* ---------------- VARIANTS ---------------- */
+const leftVariant = {
+  hidden: { opacity: 0, x: -80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
+const rightVariant = {
+  hidden: { opacity: 0, x: 80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
 const Experience = () => {
   return (
-    <section className="py-28 relative overflow-hidden bg-[#050505]">
-
+    <section
+      id="experience"
+      className="py-28 relative overflow-hidden bg-[#050505]"
+    >
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
@@ -47,6 +68,8 @@ const Experience = () => {
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.7 }}
             className="text-4xl md:text-6xl font-black text-white"
           >
             My
@@ -59,6 +82,7 @@ const Experience = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
+            viewport={{ once: false }}
             className="mt-6 text-zinc-400"
           >
             From zero → full-stack developer (2026 → ongoing)
@@ -68,38 +92,32 @@ const Experience = () => {
         {/* TIMELINE */}
         <div className="relative max-w-5xl mx-auto">
 
-          {/* ANIMATED LINE */}
+          {/* LINE (scroll smooth grow effect) */}
           <motion.div
             initial={{ height: 0 }}
             whileInView={{ height: "100%" }}
-            transition={{ duration: 1.2 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
             className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] bg-gradient-to-b from-[#00ff88]/0 via-[#00ff88]/40 to-transparent"
           />
 
-          <div className="space-y-16">
+          <div className="space-y-20">
 
             {experiences.map((exp, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.15 }}
-                className={`relative flex flex-col md:flex-row items-center gap-8 ${
+                variants={i % 2 === 0 ? leftVariant : rightVariant}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: false, amount: 0.4 }}
+                className={`relative flex flex-col md:flex-row items-center gap-10 ${
                   i % 2 === 1 ? "md:flex-row-reverse" : ""
                 }`}
               >
-
                 {/* CARD */}
-                <motion.div
-                  whileHover={{
-                    y: -8,
-                    scale: 1.02,
-                  }}
-                  className="w-full md:w-[45%]"
-                >
+                <div className="w-full md:w-[45%]">
                   <div className="p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-[#00ff88]/30 transition-all duration-300 shadow-[0_0_40px_rgba(0,255,136,0.05)]">
 
-                    {/* TYPE */}
                     <span className="text-[10px] tracking-[0.3em] uppercase text-[#00ff88]">
                       {exp.type}
                     </span>
@@ -120,26 +138,35 @@ const Experience = () => {
                       {exp.description}
                     </p>
                   </div>
-                </motion.div>
+                </div>
 
                 {/* CENTER DOT */}
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
 
-                  {/* PULSE RING */}
+                  {/* pulse ring */}
                   <motion.div
                     animate={{
                       scale: [1, 1.6, 1],
                       opacity: [0.6, 0, 0.6],
                     }}
                     transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                    }}
+                    className="absolute w-10 h-10 rounded-full bg-[#00ff88]/20 blur-xl"
+                  />
+
+                  {/* core dot */}
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{
                       duration: 2,
                       repeat: Infinity,
                     }}
-                    className="absolute w-8 h-8 rounded-full bg-[#00ff88]/20 blur-xl"
+                    className="w-4 h-4 rounded-full bg-[#050505] border-2 border-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.7)]"
                   />
-
-                  {/* MAIN DOT */}
-                  <div className="w-4 h-4 rounded-full bg-[#050505] border-2 border-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.7)] z-10" />
                 </div>
 
                 {/* EMPTY SIDE */}
@@ -149,10 +176,11 @@ const Experience = () => {
           </div>
         </div>
 
-        {/* FOOT NOTE */}
+        {/* FOOT */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
           className="text-center mt-24"
         >
           <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-white/[0.03] text-zinc-300 backdrop-blur-xl">

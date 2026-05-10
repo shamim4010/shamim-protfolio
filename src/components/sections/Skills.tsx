@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-
 import {
   Layout,
   Server,
@@ -18,25 +17,22 @@ import {
   Boxes,
 } from "lucide-react";
 
-/* ---------------- ANIMATED COUNTER ---------------- */
-const AnimatedCounter = ({ value }: { value: number }) => {
-  const [count, setCount] = useState(0);
+/* ---------------- COUNTER ---------------- */
+const AnimatedCounter = ({ value }) => {
+  const [count, setCount] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let start = 0;
-
-    const duration = 1000;
-    const step = 10;
+    const duration = 1200;
+    const step = 16;
     const increment = value / (duration / step);
 
     const timer = setInterval(() => {
       start += increment;
-
       if (start >= value) {
         start = value;
         clearInterval(timer);
       }
-
       setCount(Math.floor(start));
     }, step);
 
@@ -52,7 +48,6 @@ const skillCategories = [
     title: "Frontend (Completed)",
     icon: Layout,
     progress: 100,
-
     skills: [
       { name: "HTML", icon: Code2 },
       { name: "CSS", icon: Braces },
@@ -62,25 +57,21 @@ const skillCategories = [
       { name: "Tailwind CSS", icon: Braces },
     ],
   },
-
   {
     title: "Backend (Node.js)",
     icon: Server,
     progress: 60,
-
     skills: [
       { name: "Node.js", icon: Boxes },
       { name: "Express.js", icon: Server },
       { name: "REST APIs", icon: Cloud },
-      { name: "Authentication", icon: Sparkles },
+      { name: "Auth", icon: Sparkles },
     ],
   },
-
   {
     title: "Database",
     icon: Database,
     progress: 80,
-
     skills: [
       { name: "MongoDB", icon: Database },
       { name: "Firebase", icon: Flame },
@@ -88,28 +79,72 @@ const skillCategories = [
       { name: "Supabase", icon: Cloud },
     ],
   },
-
   {
     title: "AI & DevOps",
     icon: Cpu,
     progress: 0,
-
     skills: [
       { name: "Docker", icon: Boxes },
       { name: "AWS", icon: Cloud },
-      { name: "OpenAI APIs", icon: Sparkles },
+      { name: "OpenAI", icon: Sparkles },
       { name: "LangChain", icon: Atom },
-      { name: "CI/CD", icon: Layers },
     ],
   },
 ];
+
+/* ---------------- VARIANTS ---------------- */
+
+// SECTION reveal
+const sectionVariant = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.18, // 👈 ONE BY ONE CARD
+    },
+  },
+};
+
+// CARD glass float entrance
+const cardVariant = {
+  hidden: {
+    opacity: 0,
+    y: 60,
+    scale: 0.92,
+    filter: "blur(10px)",
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.9,
+      ease: [0.16, 1, 0.3, 1], // smooth pro easing
+    },
+  },
+};
+
+// SKILL stagger inside card
+const skillVariant = {
+  hidden: { opacity: 0, x: -10 },
+  show: (i) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.05,
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  }),
+};
 
 /* ---------------- COMPONENT ---------------- */
 const Skills = () => {
   return (
     <section className="relative py-32 overflow-hidden bg-[#050505]">
 
-      {/* BACKGROUND */}
+      {/* BACKGROUND GLOW */}
       <div className="absolute inset-0">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
         <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-cyan-400/10 blur-[140px] rounded-full" />
@@ -125,83 +160,96 @@ const Skills = () => {
               Progress
             </span>
           </h2>
-
-          <p className="mt-6 text-zinc-400">
-            Real developer roadmap — completed, growing & learning journey.
-          </p>
         </div>
 
         {/* GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-
+        <motion.div
+          variants={sectionVariant}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.2 }}
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8"
+        >
           {skillCategories.map((cat, i) => (
             <motion.div
               key={cat.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="relative p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl"
+              variants={cardVariant}
+              whileHover={{
+                y: -8,
+                scale: 1.02,
+              }}
+              className="
+                relative p-7 rounded-3xl 
+                bg-white/5 backdrop-blur-2xl 
+                border border-white/10
+                shadow-[0_0_60px_rgba(0,255,136,0.05)]
+                overflow-hidden
+              "
             >
+              {/* GLASS LIGHT REFLECTION */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-40" />
 
               {/* TITLE */}
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-3 mb-5 relative z-10">
                 <cat.icon className="w-6 h-6 text-[#00ff88]" />
-                <h3 className="text-white font-bold text-xl">
+                <h3 className="text-white font-bold text-lg">
                   {cat.title}
                 </h3>
               </div>
 
-              {/* TOP PROGRESS */}
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-zinc-400 text-sm">
-                  Overall Progress
-                </span>
-
-                <span className="text-[#00ff88] text-sm font-bold">
+              {/* PROGRESS */}
+              <div className="flex justify-between mb-3 relative z-10">
+                <span className="text-zinc-400 text-sm">Progress</span>
+                <span className="text-[#00ff88] font-bold text-sm">
                   <AnimatedCounter value={cat.progress} />
                 </span>
               </div>
 
-              {/* PROGRESS BAR */}
-              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden mb-6">
-
+              {/* BAR */}
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-6 relative z-10">
                 <motion.div
                   initial={{ width: 0 }}
                   whileInView={{ width: `${cat.progress}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
-                  className="h-full bg-gradient-to-r from-[#00ff88] to-cyan-400 relative"
-                >
-                  <div className="absolute inset-0 bg-white/20 blur-sm animate-pulse" />
-                </motion.div>
+                  viewport={{ once: false }}
+                  transition={{ duration: 1.2 }}
+                  className="h-full bg-gradient-to-r from-[#00ff88] to-cyan-400"
+                />
               </div>
 
-              {/* SKILLS LIST */}
-              <div className="space-y-3">
-
-                {cat.skills.map((skill) => (
-                  <div
+              {/* SKILLS (ONE BY ONE) */}
+              <div className="space-y-3 relative z-10">
+                {cat.skills.map((skill, i) => (
+                  <motion.div
                     key={skill.name}
+                    custom={i}
+                    variants={skillVariant}
                     className="flex items-center gap-3 text-zinc-300"
                   >
                     <skill.icon className="w-4 h-4 text-[#00ff88]" />
                     <span className="text-sm">{skill.name}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
               {/* STATUS */}
-              <div className="mt-6 text-xs text-zinc-500">
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mt-6 text-xs text-zinc-500 relative z-10"
+              >
                 {cat.progress === 100
                   ? "Fully completed & production ready"
                   : cat.progress === 0
                   ? "Just starting journey"
                   : "Actively learning & improving"}
-              </div>
+              </motion.div>
+
+              {/* BORDER GLOW */}
+              <div className="absolute inset-0 rounded-3xl border border-[#00ff88]/10 opacity-30" />
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
