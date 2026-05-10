@@ -128,7 +128,7 @@ const Hero = () => {
               </button>
 
               <button className="px-8 py-4 border border-white/10 text-white rounded-full hover:bg-white/10 transition">
-                Let’s Talk
+                Download CV
               </button>
             </motion.div>
           </motion.div>
