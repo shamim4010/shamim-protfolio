@@ -30,31 +30,60 @@ const experiences = [
   },
 ];
 
-/* ---------------- VARIANTS ---------------- */
-const leftVariant = {
-  hidden: { opacity: 0, x: -80 },
+/* ---------------- MASTER CONTAINER ---------------- */
+const container = {
+  hidden: {},
   show: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] },
+    transition: {
+      staggerChildren: 0.25,
+    },
   },
 };
 
-const rightVariant = {
-  hidden: { opacity: 0, x: 80 },
+/* ---------------- CARD ANIMATION ---------------- */
+const cardVariant = (i: number) => {
+  const isLeft = i % 2 === 0;
+
+  return {
+    hidden: {
+      opacity: 0,
+      x: isLeft ? -100 : 100,
+      y: 40,
+      scale: 0.95,
+      filter: "blur(10px)",
+    },
+    show: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.9,
+        ease: [0.22, 1, 0.36, 1], // ultra smooth
+      },
+    },
+  };
+};
+
+/* ---------------- TEXT (INSIDE CARD) ---------------- */
+const textVariant = {
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
-    x: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] },
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1],
+    },
   },
 };
 
+/* ---------------- COMPONENT ---------------- */
 const Experience = () => {
   return (
-    <section
-      id="experience"
-      className="py-28 relative overflow-hidden bg-[#050505]"
-    >
+    <section className="py-28 relative overflow-hidden bg-[#050505]">
+      
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
@@ -66,10 +95,10 @@ const Experience = () => {
         {/* HEADER */}
         <div className="text-center mb-24">
           <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.8 }}
             className="text-4xl md:text-6xl font-black text-white"
           >
             My
@@ -92,62 +121,84 @@ const Experience = () => {
         {/* TIMELINE */}
         <div className="relative max-w-5xl mx-auto">
 
-          {/* LINE (scroll smooth grow effect) */}
+          {/* LINE */}
           <motion.div
             initial={{ height: 0 }}
             whileInView={{ height: "100%" }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
             className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] bg-gradient-to-b from-[#00ff88]/0 via-[#00ff88]/40 to-transparent"
           />
 
-          <div className="space-y-20">
-
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.3 }}
+            className="space-y-20"
+          >
             {experiences.map((exp, i) => (
               <motion.div
                 key={i}
-                variants={i % 2 === 0 ? leftVariant : rightVariant}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: false, amount: 0.4 }}
+                variants={cardVariant(i)}
                 className={`relative flex flex-col md:flex-row items-center gap-10 ${
-                  i % 2 === 1 ? "md:flex-row-reverse" : ""
+                  i % 2 ? "md:flex-row-reverse" : ""
                 }`}
               >
                 {/* CARD */}
                 <div className="w-full md:w-[45%]">
-                  <div className="p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-[#00ff88]/30 transition-all duration-300 shadow-[0_0_40px_rgba(0,255,136,0.05)]">
-
-                    <span className="text-[10px] tracking-[0.3em] uppercase text-[#00ff88]">
+                  <motion.div
+                    whileHover={{
+                      y: -8,
+                      scale: 1.02,
+                    }}
+                    className="p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-[#00ff88]/30 transition-all duration-300 shadow-[0_0_40px_rgba(0,255,136,0.05)]"
+                  >
+                    <motion.span
+                      variants={textVariant}
+                      className="text-[10px] tracking-[0.3em] uppercase text-[#00ff88]"
+                    >
                       {exp.type}
-                    </span>
+                    </motion.span>
 
-                    <h3 className="text-xl font-bold text-white mt-2">
+                    <motion.h3
+                      variants={textVariant}
+                      className="text-xl font-bold text-white mt-2"
+                    >
                       {exp.title}
-                    </h3>
+                    </motion.h3>
 
-                    <p className="text-zinc-400 text-sm mt-1">
+                    <motion.p
+                      variants={textVariant}
+                      className="text-zinc-400 text-sm mt-1"
+                    >
                       {exp.company}
-                    </p>
+                    </motion.p>
 
-                    <p className="text-zinc-500 text-xs mt-2">
+                    <motion.p
+                      variants={textVariant}
+                      className="text-zinc-500 text-xs mt-2"
+                    >
                       {exp.period}
-                    </p>
+                    </motion.p>
 
-                    <p className="text-zinc-300 text-sm mt-4 leading-relaxed">
+                    <motion.p
+                      variants={textVariant}
+                      className="text-zinc-300 text-sm mt-4 leading-relaxed"
+                    >
                       {exp.description}
-                    </p>
-                  </div>
+                    </motion.p>
+                  </motion.div>
                 </div>
 
                 {/* CENTER DOT */}
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
 
-                  {/* pulse ring */}
+                  {/* pulse */}
                   <motion.div
                     animate={{
-                      scale: [1, 1.6, 1],
-                      opacity: [0.6, 0, 0.6],
+                      scale: [1, 1.8, 1],
+                      opacity: [0.5, 0, 0.5],
                     }}
                     transition={{
                       duration: 2.5,
@@ -156,31 +207,22 @@ const Experience = () => {
                     className="absolute w-10 h-10 rounded-full bg-[#00ff88]/20 blur-xl"
                   />
 
-                  {/* core dot */}
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                    }}
-                    className="w-4 h-4 rounded-full bg-[#050505] border-2 border-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.7)]"
-                  />
+                  {/* core */}
+                  <div className="w-4 h-4 rounded-full bg-[#050505] border-2 border-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.7)]" />
                 </div>
 
-                {/* EMPTY SIDE */}
                 <div className="hidden md:block w-[45%]" />
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* FOOT */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}
+          transition={{ duration: 0.7 }}
           className="text-center mt-24"
         >
           <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-white/[0.03] text-zinc-300 backdrop-blur-xl">

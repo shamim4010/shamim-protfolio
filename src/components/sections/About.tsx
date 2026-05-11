@@ -1,33 +1,40 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import Image from "next/image";
-import profileImg from "../../../public/profileImg.png"
+import profileImg from "../../../public/profileImg.png";
 
-const containerVariant = {
+/* ---------------- CONTAINER ---------------- */
+const containerVariant: Variants = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
     },
   },
 };
 
-const leftVariant = {
+/* ---------------- LEFT IMAGE ---------------- */
+const leftVariant: Variants = {
   hidden: { opacity: 0, x: -80 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.9, ease: "easeOut" },
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1], // ✅ premium easing
+    },
   },
 };
 
-const itemVariant = {
+/* ---------------- TEXT ---------------- */
+const itemVariant: Variants = {
   hidden: {
     opacity: 0,
-    y: 60,
-    scale: 0.95,
+    y: 50,
+    scale: 0.96,
     filter: "blur(6px)",
   },
   show: {
@@ -36,108 +43,51 @@ const itemVariant = {
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      duration: 0.7,
-      ease: [0.16, 1, 0.3, 1], // smoother cinematic curve
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 };
 
-const cardVariants = [
-  // LEFT CARD (depth + slight tilt)
-  {
+/* ---------------- CARD VARIANTS ---------------- */
+const getCardVariant = (i: number): Variants => {
+  const directions = [
+    { x: -60, y: 20 },
+    { x: 60, y: 20 },
+    { x: 0, y: 60 },
+    { x: -40, y: -40 },
+  ];
+
+  const dir = directions[i % directions.length];
+
+  return {
     hidden: {
       opacity: 0,
-      x: -80,
-      y: 30,
-      rotate: -4,
-      scale: 0.94,
-      filter: "blur(8px)",
+      x: dir.x,
+      y: dir.y,
+      scale: 0.95,
+      rotate: i % 2 === 0 ? -2 : 2,
+      filter: "blur(6px)",
     },
     show: {
       opacity: 1,
       x: 0,
       y: 0,
-      rotate: 0,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 2,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-  },
-
-  // RIGHT CARD (mirror effect)
-  {
-    hidden: {
-      opacity: 0,
-      x: 80,
-      y: 30,
-      rotate: 4,
-      scale: 0.94,
-      filter: "blur(8px)",
-    },
-    show: {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      rotate: 0,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 2,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-  },
-
-  // BOTTOM CARD (lift + focus)
-  {
-    hidden: {
-      opacity: 0,
-      y: 80,
-      scale: 0.9,
-      filter: "blur(10px)",
-    },
-    show: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 2,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-  },
-
-  // SCALE CARD (zoom-in with depth feel)
-  {
-    hidden: {
-      opacity: 0,
-      scale: 0.8,
-      rotate: -2,
-      filter: "blur(12px)",
-    },
-    show: {
-      opacity: 1,
       scale: 1,
       rotate: 0,
       filter: "blur(0px)",
       transition: {
-        duration: 2,
-        ease: [0.16, 1, 0.3, 1],
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
       },
     },
-  },
-];
+  };
+};
 
 const About = () => {
   return (
-    <section
-      id="about"
-      className="relative py-32 overflow-hidden bg-[#050505]"
-    >
+    <section className="relative py-32 overflow-hidden bg-[#050505]">
+      
       {/* BACKGROUND */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
@@ -148,71 +98,52 @@ const About = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-24 items-center">
 
-          {/* LEFT SIDE (unchanged) */}
+          {/* LEFT */}
           <div className="relative flex justify-center items-center">
             <motion.div
               variants={leftVariant}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, margin: "-100px" }}
+              viewport={{ once: false, margin: "-120px" }}
               className="relative flex justify-center"
             >
               {/* ROTATING RING */}
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{
-                  duration: 25,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
                 className="absolute w-[460px] h-[460px] rounded-[42%]"
                 style={{
                   border: "1px solid rgba(0,255,136,0.15)",
-                  boxShadow: "0 0 50px rgba(0,255,136,0.12)",
                 }}
               />
 
-              {/* INNER ENERGY ORBIT */}
+              {/* INNER RING */}
               <motion.div
                 animate={{ rotate: -360 }}
-                transition={{
-                  duration: 40,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                 className="absolute w-[390px] h-[390px] rounded-[38%]"
                 style={{
                   border: "1px dashed rgba(255,255,255,0.08)",
                 }}
               />
 
-              {/* FLOATING BALL */}
+              {/* FLOAT BALLS */}
               <motion.div
-                animate={{
-                  y: [0, -15, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                }}
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
                 className="absolute top-10 left-10 w-5 h-5 rounded-full bg-[#00ff88] blur-[2px]"
               />
 
               <motion.div
-                animate={{
-                  y: [0, 20, 0],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                }}
+                animate={{ y: [0, 16, 0] }}
+                transition={{ duration: 5, repeat: Infinity }}
                 className="absolute bottom-10 right-10 w-4 h-4 rounded-full bg-cyan-400 blur-[2px]"
               />
 
               {/* IMAGE */}
               <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 6, repeat: Infinity }}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 className="relative w-[340px] h-[440px] overflow-hidden"
                 style={{
                   borderRadius: "42% 58% 63% 37% / 38% 42% 58% 62%",
@@ -220,48 +151,37 @@ const About = () => {
                   backdropFilter: "blur(20px)",
                 }}
               >
-                {/* SCAN LINE */}
+                {/* SCAN */}
                 <motion.div
-                  animate={{
-                    y: ["-100%", "100%"],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
+                  animate={{ y: ["-100%", "100%"] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                   className="absolute inset-0 z-20 bg-gradient-to-b from-transparent via-[#00ff8820] to-transparent"
                 />
+
                 <Image
                   src={profileImg}
                   alt="profile"
                   fill
                   className="object-cover scale-110"
                 />
-                {/* NOISE */}
+
                 <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/noise.png')]" />
               </motion.div>
             </motion.div>
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT */}
           <motion.div
             variants={containerVariant}
             initial="hidden"
             whileInView="show"
-            viewport={{ once: false, margin: "-100px" }} // 👈 re-trigger animation
+            viewport={{ once: false, margin: "-120px" }}
           >
-            <motion.span
-              variants={itemVariant}
-              className="text-[#00ff88] text-xs tracking-[0.3em] uppercase font-bold"
-            >
+            <motion.span variants={itemVariant} className="text-[#00ff88] text-xs tracking-[0.3em] uppercase font-bold">
               About Me
             </motion.span>
 
-            <motion.h2
-              variants={itemVariant}
-              className="text-4xl md:text-6xl font-black leading-tight text-white mt-5"
-            >
+            <motion.h2 variants={itemVariant} className="text-4xl md:text-6xl font-black text-white mt-5">
               Building
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-cyan-300">
                 Futuristic
@@ -269,43 +189,31 @@ const About = () => {
               Digital Experiences
             </motion.h2>
 
-            <motion.p
-              variants={itemVariant}
-              className="mt-8 text-zinc-400 text-lg leading-relaxed max-w-xl"
-            >
-              I create cinematic and immersive web experiences focused on
-              performance, interaction, and modern visual storytelling.
+            <motion.p variants={itemVariant} className="mt-8 text-zinc-400 text-lg max-w-xl">
+              I create cinematic and immersive web experiences focused on performance and interaction.
             </motion.p>
 
-            <motion.p
-              variants={itemVariant}
-              className="mt-5 text-zinc-500 leading-relaxed max-w-xl"
-            >
-              My goal is to blend creativity with engineering to build
-              interfaces that feel alive, emotional, and unforgettable.
+            <motion.p variants={itemVariant} className="mt-5 text-zinc-500 max-w-xl">
+              Blending creativity with engineering to build interfaces that feel alive.
             </motion.p>
 
-            {/* INFO CARDS */}
-            <motion.div
-              variants={containerVariant}
-              className="grid grid-cols-2 gap-5 mt-12"
-            >
+            {/* CARDS */}
+            <motion.div variants={containerVariant} className="grid grid-cols-2 gap-5 mt-12">
               {[
                 { label: "Experience", value: "2026 - Learning" },
                 { label: "Frontend", value: "HTML, CSS, React" },
-                { label: "Backend", value: "Node.js (Learning)" },
+                { label: "Backend", value: "Node.js" },
                 { label: "Focus", value: "Full Stack Growth" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  variants={cardVariants[i]}
+                  variants={getCardVariant(i)}
                   whileHover={{ y: -6, scale: 1.03 }}
                   className="p-5 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl"
                 >
                   <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">
                     {item.label}
                   </p>
-
                   <h3 className="text-white font-semibold mt-2">
                     {item.value}
                   </h3>

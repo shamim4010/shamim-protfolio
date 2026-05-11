@@ -7,7 +7,6 @@ import {
   Server,
   Database,
   Cpu,
-  Layers,
   Sparkles,
   Atom,
   Code2,
@@ -18,12 +17,12 @@ import {
 } from "lucide-react";
 
 /* ---------------- COUNTER ---------------- */
-const AnimatedCounter = ({ value }) => {
+const AnimatedCounter = ({ value }: { value: number }) => {
   const [count, setCount] = React.useState(0);
 
   React.useEffect(() => {
     let start = 0;
-    const duration = 1200;
+    const duration = 1000;
     const step = 16;
     const increment = value / (duration / step);
 
@@ -94,47 +93,44 @@ const skillCategories = [
 
 /* ---------------- VARIANTS ---------------- */
 
-// SECTION reveal
-const sectionVariant = {
-  hidden: { opacity: 0 },
+// container stagger (clean timing)
+const container = {
+  hidden: {},
   show: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.18, // 👈 ONE BY ONE CARD
+      staggerChildren: 0.12,
     },
   },
 };
 
-// CARD glass float entrance
-const cardVariant = {
+// card animation (smooth + premium)
+const card = {
   hidden: {
     opacity: 0,
-    y: 60,
-    scale: 0.92,
-    filter: "blur(10px)",
+    y: 50,
+    scale: 0.96,
   },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.9,
-      ease: [0.16, 1, 0.3, 1], // smooth pro easing
+      duration: 0.7,
+      ease: [0.25, 0.1, 0.25, 1],
     },
   },
 };
 
-// SKILL stagger inside card
-const skillVariant = {
-  hidden: { opacity: 0, x: -10 },
-  show: (i) => ({
+// skill items (subtle stagger)
+const skillItem = {
+  hidden: { opacity: 0, x: -8 },
+  show: (i: number) => ({
     opacity: 1,
     x: 0,
     transition: {
-      delay: i * 0.05,
-      duration: 0.4,
-      ease: "easeOut",
+      delay: i * 0.04,
+      duration: 0.35,
+      ease: [0.25, 0.1, 0.25, 1],
     },
   }),
 };
@@ -144,7 +140,7 @@ const Skills = () => {
   return (
     <section className="relative py-32 overflow-hidden bg-[#050505]">
 
-      {/* BACKGROUND GLOW */}
+      {/* BACKGROUND */}
       <div className="absolute inset-0">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
         <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-cyan-400/10 blur-[140px] rounded-full" />
@@ -164,7 +160,7 @@ const Skills = () => {
 
         {/* GRID */}
         <motion.div
-          variants={sectionVariant}
+          variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: false, amount: 0.2 }}
@@ -173,26 +169,27 @@ const Skills = () => {
           {skillCategories.map((cat, i) => (
             <motion.div
               key={cat.title}
-              variants={cardVariant}
+              variants={card}
               whileHover={{
-                y: -8,
-                scale: 1.02,
+                y: -6,
+                scale: 1.015,
               }}
               className="
-                relative p-7 rounded-3xl 
-                bg-white/5 backdrop-blur-2xl 
+                relative p-7 rounded-3xl
+                bg-white/[0.04] backdrop-blur-xl
                 border border-white/10
-                shadow-[0_0_60px_rgba(0,255,136,0.05)]
-                overflow-hidden
+                shadow-[0_10px_40px_rgba(0,0,0,0.4)]
+                transition
               "
             >
-              {/* GLASS LIGHT REFLECTION */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-40" />
+
+              {/* subtle light */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-30" />
 
               {/* TITLE */}
               <div className="flex items-center gap-3 mb-5 relative z-10">
                 <cat.icon className="w-6 h-6 text-[#00ff88]" />
-                <h3 className="text-white font-bold text-lg">
+                <h3 className="text-white font-semibold text-lg">
                   {cat.title}
                 </h3>
               </div>
@@ -211,18 +208,21 @@ const Skills = () => {
                   initial={{ width: 0 }}
                   whileInView={{ width: `${cat.progress}%` }}
                   viewport={{ once: false }}
-                  transition={{ duration: 1.2 }}
+                  transition={{
+                    duration: 1,
+                    ease: [0.25, 0.1, 0.25, 1],
+                  }}
                   className="h-full bg-gradient-to-r from-[#00ff88] to-cyan-400"
                 />
               </div>
 
-              {/* SKILLS (ONE BY ONE) */}
+              {/* SKILLS */}
               <div className="space-y-3 relative z-10">
                 {cat.skills.map((skill, i) => (
                   <motion.div
                     key={skill.name}
                     custom={i}
-                    variants={skillVariant}
+                    variants={skillItem}
                     className="flex items-center gap-3 text-zinc-300"
                   >
                     <skill.icon className="w-4 h-4 text-[#00ff88]" />
@@ -235,7 +235,7 @@ const Skills = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}
                 className="mt-6 text-xs text-zinc-500 relative z-10"
               >
                 {cat.progress === 100
@@ -245,8 +245,8 @@ const Skills = () => {
                   : "Actively learning & improving"}
               </motion.div>
 
-              {/* BORDER GLOW */}
-              <div className="absolute inset-0 rounded-3xl border border-[#00ff88]/10 opacity-30" />
+              {/* subtle border glow */}
+              <div className="absolute inset-0 rounded-3xl border border-[#00ff88]/10 opacity-20" />
             </motion.div>
           ))}
         </motion.div>

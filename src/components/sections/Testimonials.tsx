@@ -26,33 +26,35 @@ const testimonials = [
   },
 ];
 
-/* ---------------- TYPING HOOK ---------------- */
-const useTyping = (text, active) => {
+/* ---------------- TYPING HOOK (SMOOTH + NATURAL) ---------------- */
+const useTyping = (text: string, active: boolean) => {
   const [display, setDisplay] = useState("");
 
   useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      setDisplay("");
+      return;
+    }
 
-    setDisplay("");
     let i = 0;
 
-    const interval = setInterval(() => {
+    const type = () => {
       setDisplay(text.slice(0, i + 1));
       i++;
 
-      if (i >= text.length) {
-        clearInterval(interval);
+      if (i < text.length) {
+        setTimeout(type, 12 + Math.random() * 25); // 👈 human typing feel
       }
-    }, 18); // speed control (lower = faster)
+    };
 
-    return () => clearInterval(interval);
+    type();
   }, [text, active]);
 
   return display;
 };
 
 /* ---------------- CARD ---------------- */
-const TestimonialCard = ({ item }) => {
+const TestimonialCard = ({ item, index }: any) => {
   const [active, setActive] = useState(false);
   const typedText = useTyping(item.text, active);
 
@@ -60,8 +62,15 @@ const TestimonialCard = ({ item }) => {
     <motion.div
       onViewportEnter={() => setActive(true)}
       onViewportLeave={() => setActive(false)}
+      initial={{ opacity: 0, y: 50, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 0.7,
+        delay: index * 0.15, // 👈 stagger
+        ease: [0.16, 1, 0.3, 1],
+      }}
       viewport={{ once: false, amount: 0.4 }}
-      className="relative p-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl"
+      className="relative p-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-[#00ff88]/30 transition-all duration-300"
     >
       {/* ICON */}
       <Quote className="absolute top-6 right-6 text-[#00ff88]/20 w-10 h-10" />
@@ -79,9 +88,9 @@ const TestimonialCard = ({ item }) => {
       <p className="text-zinc-500 text-sm">{item.role}</p>
 
       {/* TYPING TEXT */}
-      <p className="text-zinc-300 mt-6 leading-relaxed min-h-[90px]">
+      <p className="text-zinc-300 mt-6 leading-relaxed min-h-[100px]">
         “{typedText}”
-        <span className="animate-pulse">|</span>
+        <span className="ml-1 animate-pulse text-[#00ff88]">|</span>
       </p>
 
       {/* STARS */}
@@ -97,10 +106,11 @@ const TestimonialCard = ({ item }) => {
   );
 };
 
-/* ---------------- MAIN COMPONENT ---------------- */
+/* ---------------- MAIN ---------------- */
 const Testimonials = () => {
   return (
     <section className="py-24 relative overflow-hidden bg-[#050505]">
+
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
@@ -108,6 +118,7 @@ const Testimonials = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
+
         {/* HEADER */}
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-6xl font-black text-white">
@@ -124,8 +135,8 @@ const Testimonials = () => {
 
         {/* GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((item) => (
-            <TestimonialCard key={item.name} item={item} />
+          {testimonials.map((item, i) => (
+            <TestimonialCard key={item.name} item={item} index={i} />
           ))}
         </div>
 
@@ -135,6 +146,7 @@ const Testimonials = () => {
             These represent personal learning reflections, not client reviews.
           </p>
         </div>
+
       </div>
     </section>
   );

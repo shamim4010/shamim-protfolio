@@ -3,26 +3,73 @@
 import Image from "next/image";
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  Send,
-  MousePointer2,
-  GitBranchPlus,
-  Link,
-} from "lucide-react";
+import { MousePointer2 } from "lucide-react";
 
 import ParticleField from "../particle/ParticleField";
 import profileImg from "../../../public/profileImg.png";
 
-const Hero = () => {
-  const roles = [
-    "Md Shamim Miah",
-    "Full Stack Developer",
-    "Ai Engineer",
-    "Next.js Engineer",
-    "React Specialist",
-  ];
+/* ---------------- TYPEWRITER ---------------- */
+const roles = [
+  "Md Shamim Miah",
+  "Full Stack Developer",
+  "AI Engineer",
+  "Next.js Engineer",
+  "React Specialist",
+];
 
+/* ---------------- ANIMATION ---------------- */
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.18,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 40,
+    filter: "blur(8px)",
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1], // ✅ TS SAFE
+    },
+  },
+};
+
+const slideLeft = {
+  hidden: { opacity: 0, x: -80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const slideRight = {
+  hidden: { opacity: 0, x: 80 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+/* ---------------- COMPONENT ---------------- */
+const Hero = () => {
   const [index, setIndex] = React.useState(0);
   const [text, setText] = React.useState("");
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -41,29 +88,10 @@ const Hero = () => {
           setIndex((prev) => prev + 1);
         }
       }
-    }, isDeleting ? 60 : 120);
+    }, isDeleting ? 50 : 110);
 
     return () => clearTimeout(timeout);
-  }, [text, isDeleting]);
-
-  // 🔥 ANIMATION VARIANTS
-  const leftVariant = {
-    hidden: { opacity: 0, x: -80 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.9, ease: "easeOut" },
-    },
-  };
-
-  const rightVariant = {
-    hidden: { opacity: 0, x: 80 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.9, ease: "easeOut" },
-    },
-  };
+  }, [text, isDeleting, index]); // ✅ FIXED DEPENDENCY
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#050505] flex items-center justify-center px-6 py-28">
@@ -71,7 +99,7 @@ const Hero = () => {
       {/* PARTICLES */}
       <ParticleField />
 
-      {/* BACKGROUND */}
+      {/* BG GLOW */}
       <div className="absolute inset-0">
         <div className="absolute top-[-10%] left-[10%] w-[700px] h-[700px] bg-[#00ff88]/10 blur-[150px] rounded-full" />
         <div className="absolute bottom-[-20%] right-[10%] w-[600px] h-[600px] bg-cyan-400/10 blur-[150px] rounded-full" />
@@ -82,14 +110,13 @@ const Hero = () => {
 
           {/* LEFT */}
           <motion.div
-            variants={leftVariant}
+            variants={container}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: false, margin: "-100px" }}
+            animate="show"
           >
             {/* Badge */}
             <motion.div
-              variants={leftVariant}
+              variants={fadeUp}
               className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[#00ff88]/20 bg-white/5 mb-8"
             >
               <div className="w-2 h-2 rounded-full bg-[#00ff88] animate-ping" />
@@ -100,7 +127,7 @@ const Hero = () => {
 
             {/* Heading */}
             <motion.h1
-              variants={leftVariant}
+              variants={fadeUp}
               className="text-5xl md:text-7xl font-black text-white"
             >
               Hi, I'm <br />
@@ -111,7 +138,7 @@ const Hero = () => {
 
             {/* Description */}
             <motion.p
-              variants={leftVariant}
+              variants={fadeUp}
               className="mt-6 text-zinc-400 text-lg max-w-xl"
             >
               I build cinematic digital experiences with modern frontend,
@@ -120,7 +147,7 @@ const Hero = () => {
 
             {/* Buttons */}
             <motion.div
-              variants={leftVariant}
+              variants={fadeUp}
               className="flex gap-5 mt-10 flex-wrap"
             >
               <button className="px-8 py-4 bg-[#00ff88] text-black rounded-full hover:scale-105 transition">
@@ -133,97 +160,48 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* RIGHT IMAGE */}
+          {/* RIGHT */}
           <motion.div
-            variants={rightVariant}
+            variants={slideRight}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: false, margin: "-100px" }}
+            animate="show"
             className="relative flex justify-center"
           >
-            {/* ROTATING RING */}
+            {/* ROTATION */}
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{
-                duration: 25,
-                repeat: Infinity,
-                ease: "linear",
-              }}
+              transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
               className="absolute w-[460px] h-[460px] rounded-[42%]"
               style={{
                 border: "1px solid rgba(0,255,136,0.15)",
-                boxShadow: "0 0 50px rgba(0,255,136,0.12)",
               }}
             />
 
-            {/* INNER ENERGY ORBIT */}
             <motion.div
               animate={{ rotate: -360 }}
-              transition={{
-                duration: 40,
-                repeat: Infinity,
-                ease: "linear",
-              }}
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
               className="absolute w-[390px] h-[390px] rounded-[38%]"
               style={{
                 border: "1px dashed rgba(255,255,255,0.08)",
               }}
             />
 
-            {/* FLOATING BALL */}
-            <motion.div
-              animate={{
-                y: [0, -15, 0],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-              }}
-              className="absolute top-10 left-10 w-5 h-5 rounded-full bg-[#00ff88] blur-[2px]"
-            />
-
-            <motion.div
-              animate={{
-                y: [0, 20, 0],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-              }}
-              className="absolute bottom-10 right-10 w-4 h-4 rounded-full bg-cyan-400 blur-[2px]"
-            />
-
             {/* IMAGE */}
             <motion.div
-              animate={{ y: [0, -10, 0] }}
+              animate={{ y: [0, -12, 0] }}
               transition={{ duration: 6, repeat: Infinity }}
               className="relative w-[340px] h-[440px] overflow-hidden"
               style={{
                 borderRadius: "42% 58% 63% 37% / 38% 42% 58% 62%",
                 border: "1px solid rgba(255,255,255,0.08)",
-                backdropFilter: "blur(20px)",
               }}
             >
-              {/* SCAN LINE */}
-              <motion.div
-                animate={{
-                  y: ["-100%", "100%"],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                className="absolute inset-0 z-20 bg-gradient-to-b from-transparent via-[#00ff8820] to-transparent"
-              />
               <Image
                 src={profileImg}
                 alt="profile"
                 fill
                 className="object-cover scale-110"
               />
-              {/* NOISE */}
-              <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/noise.png')]" />
             </motion.div>
           </motion.div>
         </div>
@@ -231,9 +209,9 @@ const Hero = () => {
 
       {/* SCROLL INDICATOR */}
       <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: false }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center"
       >
         <span className="text-xs text-zinc-500">Scroll</span>
