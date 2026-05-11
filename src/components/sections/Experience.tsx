@@ -3,6 +3,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+/* ---------------- SAFE EASING (IMPORTANT FIX) ---------------- */
+const smoothEase = (t: number) =>
+  t < 0.5
+    ? 4 * t * t * t
+    : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+/* ---------------- DATA ---------------- */
 const experiences = [
   {
     title: "Started Programming Journey",
@@ -30,17 +37,16 @@ const experiences = [
   },
 ];
 
-/* ---------------- MASTER CONTAINER ---------------- */
+/* ---------------- VARIANTS ---------------- */
 const container = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.25,
+      staggerChildren: 0.2,
     },
   },
 };
 
-/* ---------------- CARD ANIMATION ---------------- */
 const cardVariant = (i: number) => {
   const isLeft = i % 2 === 0;
 
@@ -50,7 +56,7 @@ const cardVariant = (i: number) => {
       x: isLeft ? -100 : 100,
       y: 40,
       scale: 0.95,
-      filter: "blur(10px)",
+      filter: "blur(8px)",
     },
     show: {
       opacity: 1,
@@ -60,21 +66,20 @@ const cardVariant = (i: number) => {
       filter: "blur(0px)",
       transition: {
         duration: 0.9,
-        ease: [0.22, 1, 0.36, 1], // ultra smooth
+        ease: smoothEase, // ✅ FIXED HERE
       },
     },
   };
 };
 
-/* ---------------- TEXT (INSIDE CARD) ---------------- */
 const textVariant = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 15 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
+      ease: smoothEase, // ✅ FIXED HERE
     },
   },
 };
@@ -83,7 +88,7 @@ const textVariant = {
 const Experience = () => {
   return (
     <section className="py-28 relative overflow-hidden bg-[#050505]">
-      
+
       {/* BACKGROUND */}
       <div className="absolute inset-0">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
@@ -95,10 +100,10 @@ const Experience = () => {
         {/* HEADER */}
         <div className="text-center mb-24">
           <motion.h2
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.7 }}
             className="text-4xl md:text-6xl font-black text-white"
           >
             My
@@ -110,8 +115,8 @@ const Experience = () => {
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
             viewport={{ once: false }}
+            transition={{ delay: 0.2 }}
             className="mt-6 text-zinc-400"
           >
             From zero → full-stack developer (2026 → ongoing)
@@ -126,10 +131,14 @@ const Experience = () => {
             initial={{ height: 0 }}
             whileInView={{ height: "100%" }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 1.4,
+              ease: smoothEase, // ✅ FIXED HERE
+            }}
             className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] bg-gradient-to-b from-[#00ff88]/0 via-[#00ff88]/40 to-transparent"
           />
 
+          {/* CARDS */}
           <motion.div
             variants={container}
             initial="hidden"
@@ -145,15 +154,11 @@ const Experience = () => {
                   i % 2 ? "md:flex-row-reverse" : ""
                 }`}
               >
+
                 {/* CARD */}
                 <div className="w-full md:w-[45%]">
-                  <motion.div
-                    whileHover={{
-                      y: -8,
-                      scale: 1.02,
-                    }}
-                    className="p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-[#00ff88]/30 transition-all duration-300 shadow-[0_0_40px_rgba(0,255,136,0.05)]"
-                  >
+                  <div className="p-7 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+
                     <motion.span
                       variants={textVariant}
                       className="text-[10px] tracking-[0.3em] uppercase text-[#00ff88]"
@@ -188,16 +193,16 @@ const Experience = () => {
                     >
                       {exp.description}
                     </motion.p>
-                  </motion.div>
+
+                  </div>
                 </div>
 
-                {/* CENTER DOT */}
+                {/* DOT */}
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
 
-                  {/* pulse */}
                   <motion.div
                     animate={{
-                      scale: [1, 1.8, 1],
+                      scale: [1, 1.6, 1],
                       opacity: [0.5, 0, 0.5],
                     }}
                     transition={{
@@ -207,8 +212,7 @@ const Experience = () => {
                     className="absolute w-10 h-10 rounded-full bg-[#00ff88]/20 blur-xl"
                   />
 
-                  {/* core */}
-                  <div className="w-4 h-4 rounded-full bg-[#050505] border-2 border-[#00ff88] shadow-[0_0_15px_rgba(0,255,136,0.7)]" />
+                  <div className="w-4 h-4 rounded-full bg-[#050505] border-2 border-[#00ff88]" />
                 </div>
 
                 <div className="hidden md:block w-[45%]" />
@@ -219,16 +223,17 @@ const Experience = () => {
 
         {/* FOOT */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.6, ease: smoothEase }}
           className="text-center mt-24"
         >
           <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-white/[0.03] text-zinc-300 backdrop-blur-xl">
             🌱 Growing daily → Next goal: Advanced Full Stack + AI Engineer
           </div>
         </motion.div>
+
       </div>
     </section>
   );
