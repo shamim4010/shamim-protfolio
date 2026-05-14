@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   Layout,
   Server,
@@ -94,7 +94,7 @@ const skillCategories = [
 /* ---------------- VARIANTS ---------------- */
 
 // container stagger (clean timing)
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -104,7 +104,7 @@ const container = {
 };
 
 // card animation (smooth + premium)
-const card = {
+const card: Variants = {
   hidden: {
     opacity: 0,
     y: 50,
@@ -122,7 +122,7 @@ const card = {
 };
 
 // skill items (subtle stagger)
-const skillItem = {
+const skillItem: Variants = {
   hidden: { opacity: 0, x: -8 },
   show: (i: number) => ({
     opacity: 1,

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ArrowUpRight, Sparkles, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 
@@ -54,7 +54,7 @@ const projects = [
 ];
 
 /* ---------------- VARIANTS ---------------- */
-const cardVariant = {
+const cardVariant: Variants = {
   hidden: {
     opacity: 0,
     y: 40,

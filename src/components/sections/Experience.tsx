@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 const experiences = [
   {
@@ -31,7 +31,7 @@ const experiences = [
 ];
 
 /* ---------------- MASTER ---------------- */
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -41,7 +41,7 @@ const container = {
 };
 
 /* ---------------- SAFE VARIANT (FIXED) ---------------- */
-const cardVariant = (i: number) => {
+const cardVariant = (i: number): Variants => {
   const isLeft = i % 2 === 0;
 
   return {
@@ -67,7 +67,7 @@ const cardVariant = (i: number) => {
 };
 
 /* ---------------- TEXT ---------------- */
-const textVariant = {
+const textVariant: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
