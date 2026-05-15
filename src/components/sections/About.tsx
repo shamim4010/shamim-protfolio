@@ -1,95 +1,141 @@
 "use client";
 
-import React from "react";
-import { motion, Variants } from "framer-motion";
+import React, { useRef } from "react";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import profileImg from "../../../public/profileImg.png";
 
-/* ---------------- CONTAINER ---------------- */
-const containerVariant: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-/* ---------------- LEFT IMAGE ---------------- */
-const leftVariant: Variants = {
-  hidden: { opacity: 0, x: -80 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.8,
-      ease: [0.22, 1, 0.36, 1], // ✅ premium easing
-    },
-  },
-};
-
-/* ---------------- TEXT ---------------- */
-const itemVariant: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 50,
-    scale: 0.96,
-    filter: "blur(6px)",
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
-
-/* ---------------- CARD VARIANTS ---------------- */
-const getCardVariant = (i: number): Variants => {
-  const directions = [
-    { x: -60, y: 20 },
-    { x: 60, y: 20 },
-    { x: 0, y: 60 },
-    { x: -40, y: -40 },
-  ];
-
-  const dir = directions[i % directions.length];
-
-  return {
-    hidden: {
-      opacity: 0,
-      x: dir.x,
-      y: dir.y,
-      scale: 0.95,
-      rotate: i % 2 === 0 ? -2 : 2,
-      filter: "blur(6px)",
-    },
-    show: {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      scale: 1,
-      rotate: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.7,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
-};
+gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // Scroll reveal animation for the left image group
+    gsap.from(".about-left", {
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 75%",
+      },
+      opacity: 0,
+      x: -80,
+      duration: 0.8,
+      ease: "power3.out",
+    });
+
+    // Stagger animation for the right text elements
+    gsap.from(".about-text", {
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 75%",
+      },
+      opacity: 0,
+      y: 50,
+      scale: 0.96,
+      filter: "blur(6px)",
+      duration: 0.6,
+      stagger: 0.12,
+      ease: "power3.out",
+    });
+
+    // Stagger animation for the cards
+    gsap.from(".about-card", {
+      scrollTrigger: {
+        trigger: ".about-cards-container",
+        start: "top 85%",
+      },
+      opacity: 0,
+      y: 60,
+      scale: 0.95,
+      filter: "blur(6px)",
+      duration: 0.7,
+      stagger: 0.1,
+      ease: "power3.out",
+    });
+
+    // Continuous rotation for rings
+    gsap.to(".ring-outer", {
+      rotation: 360,
+      duration: 25,
+      repeat: -1,
+      ease: "none",
+    });
+
+    gsap.to(".ring-inner", {
+      rotation: -360,
+      duration: 40,
+      repeat: -1,
+      ease: "none",
+    });
+
+    // Floating balls
+    gsap.to(".float-ball-1", {
+      y: -12,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    gsap.to(".float-ball-2", {
+      y: 16,
+      duration: 2.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    // Image float
+    gsap.to(".image-container", {
+      y: -8,
+      duration: 3,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    // Image scan line
+    gsap.to(".scan-line", {
+      y: "200%",
+      duration: 3,
+      repeat: -1,
+      ease: "none",
+    });
+
+  }, { scope: containerRef });
+
+  // 3D Hover effect for cards
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    gsap.to(card, {
+      rotationX: -y / 10,
+      rotationY: x / 10,
+      transformPerspective: 500,
+      ease: "power1.out",
+      duration: 0.3,
+    });
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(e.currentTarget, {
+      rotationX: 0,
+      rotationY: 0,
+      ease: "power3.out",
+      duration: 0.5,
+    });
+  };
+
   return (
-    <section className="relative py-32 overflow-hidden bg-[#050505]">
+    <section className="relative py-32 overflow-hidden bg-[#050505]" ref={containerRef}>
       
       {/* BACKGROUND */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-200px] left-[-200px] w-[500px] h-[500px] bg-[#00ff88]/10 blur-[140px] rounded-full" />
         <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-cyan-400/10 blur-[140px] rounded-full" />
         <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:40px_40px]" />
@@ -100,51 +146,35 @@ const About = () => {
 
           {/* LEFT */}
           <div className="relative flex justify-center items-center">
-            <motion.div
-              variants={leftVariant}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, margin: "-120px" }}
-              className="relative flex justify-center"
-            >
+            <div className="about-left relative flex justify-center">
               {/* ROTATING RING */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[460px] h-[460px] rounded-[42%]"
+              <div
+                className="ring-outer absolute w-[460px] h-[460px] rounded-[42%]"
                 style={{
                   border: "1px solid rgba(0,255,136,0.15)",
                 }}
               />
 
               {/* INNER RING */}
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[390px] h-[390px] rounded-[38%]"
+              <div
+                className="ring-inner absolute w-[390px] h-[390px] rounded-[38%]"
                 style={{
                   border: "1px dashed rgba(255,255,255,0.08)",
                 }}
               />
 
               {/* FLOAT BALLS */}
-              <motion.div
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute top-10 left-10 w-5 h-5 rounded-full bg-[#00ff88] blur-[2px]"
+              <div
+                className="float-ball-1 absolute top-10 left-10 w-5 h-5 rounded-full bg-[#00ff88] blur-[2px]"
               />
 
-              <motion.div
-                animate={{ y: [0, 16, 0] }}
-                transition={{ duration: 5, repeat: Infinity }}
-                className="absolute bottom-10 right-10 w-4 h-4 rounded-full bg-cyan-400 blur-[2px]"
+              <div
+                className="float-ball-2 absolute bottom-10 right-10 w-4 h-4 rounded-full bg-cyan-400 blur-[2px]"
               />
 
               {/* IMAGE */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="relative w-[340px] h-[440px] overflow-hidden"
+              <div
+                className="image-container relative w-[340px] h-[440px] overflow-hidden"
                 style={{
                   borderRadius: "42% 58% 63% 37% / 38% 42% 58% 62%",
                   border: "1px solid rgba(255,255,255,0.08)",
@@ -152,75 +182,68 @@ const About = () => {
                 }}
               >
                 {/* SCAN */}
-                <motion.div
-                  animate={{ y: ["-100%", "100%"] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 z-20 bg-gradient-to-b from-transparent via-[#00ff8820] to-transparent"
+                <div
+                  className="scan-line absolute -top-[100%] left-0 w-full h-full z-20 bg-gradient-to-b from-transparent via-[#00ff8820] to-transparent pointer-events-none"
                 />
 
                 <Image
                   src={profileImg}
                   alt="profile"
                   fill
-                  className="object-cover scale-110"
+                  className="object-cover scale-110 pointer-events-none"
                 />
 
-                <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/noise.png')]" />
-              </motion.div>
-            </motion.div>
+                <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/noise.png')] pointer-events-none" />
+              </div>
+            </div>
           </div>
 
           {/* RIGHT */}
-          <motion.div
-            variants={containerVariant}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: false, margin: "-120px" }}
-          >
-            <motion.span variants={itemVariant} className="text-[#00ff88] text-xs tracking-[0.3em] uppercase font-bold">
+          <div>
+            <span className="about-text block text-[#00ff88] text-xs tracking-[0.3em] uppercase font-bold">
               About Me
-            </motion.span>
+            </span>
 
-            <motion.h2 variants={itemVariant} className="text-4xl md:text-6xl font-black text-white mt-5">
+            <h2 className="about-text text-4xl md:text-6xl font-black text-white mt-5">
               Building
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-cyan-300">
                 Futuristic
               </span>
               Digital Experiences
-            </motion.h2>
+            </h2>
 
-            <motion.p variants={itemVariant} className="mt-8 text-zinc-400 text-lg max-w-xl">
+            <p className="about-text mt-8 text-zinc-400 text-lg max-w-xl">
               I create cinematic and immersive web experiences focused on performance and interaction.
-            </motion.p>
+            </p>
 
-            <motion.p variants={itemVariant} className="mt-5 text-zinc-500 max-w-xl">
+            <p className="about-text mt-5 text-zinc-500 max-w-xl">
               Blending creativity with engineering to build interfaces that feel alive.
-            </motion.p>
+            </p>
 
             {/* CARDS */}
-            <motion.div variants={containerVariant} className="grid grid-cols-2 gap-5 mt-12">
+            <div className="about-cards-container grid grid-cols-2 gap-5 mt-12 perspective-[1000px]">
               {[
                 { label: "Experience", value: "2026 - Learning" },
                 { label: "Frontend", value: "HTML, CSS, React" },
                 { label: "Backend", value: "Node.js" },
                 { label: "Focus", value: "Full Stack Growth" },
               ].map((item, i) => (
-                <motion.div
+                <div
                   key={i}
-                  variants={getCardVariant(i)}
-                  whileHover={{ y: -6, scale: 1.03 }}
-                  className="p-5 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl"
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  className="about-card p-5 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl [transform-style:preserve-3d] cursor-pointer hover:border-[#00ff88]/30 transition-colors"
                 >
-                  <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 [transform:translateZ(20px)]">
                     {item.label}
                   </p>
-                  <h3 className="text-white font-semibold mt-2">
+                  <h3 className="text-white font-semibold mt-2 [transform:translateZ(30px)]">
                     {item.value}
                   </h3>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
         </div>
       </div>

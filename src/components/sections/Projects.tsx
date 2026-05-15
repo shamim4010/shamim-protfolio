@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
-import { ArrowUpRight, Sparkles, X } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ---------------- DATA ---------------- */
 const projects = [
@@ -53,79 +58,101 @@ const projects = [
   },
 ];
 
-/* ---------------- VARIANTS ---------------- */
-const cardVariant: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 40,
-    scale: 0.96,
-  },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      delay: i * 0.08,
-      duration: 0.6,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
-  }),
-};
-
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const duplicatedProjects = [...projects, ...projects];
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // Scroll entry animation
+    gsap.from(".project-card", {
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 75%",
+      },
+      opacity: 0,
+      y: 40,
+      scale: 0.96,
+      duration: 0.6,
+      stagger: 0.08,
+      ease: "power3.out",
+    });
+
+    // Auto scroll animation using GSAP
+    if (scrollContainerRef.current) {
+      gsap.to(scrollContainerRef.current, {
+        xPercent: -50,
+        ease: "none",
+        duration: 35,
+        repeat: -1,
+      });
+    }
+
+  }, { scope: sectionRef });
+
+  // 3D Hover tilt effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    gsap.to(card, {
+      rotationX: -y / 15,
+      rotationY: x / 15,
+      transformPerspective: 800,
+      ease: "power1.out",
+      duration: 0.4,
+    });
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(e.currentTarget, {
+      rotationX: 0,
+      rotationY: 0,
+      ease: "power3.out",
+      duration: 0.6,
+    });
+  };
+
   return (
-    <section className="relative py-32 overflow-hidden bg-[#050505]">
+    <section className="relative py-32 overflow-hidden bg-[#050505]" ref={sectionRef}>
 
       {/* AUTO SCROLL */}
       <div className="relative overflow-hidden">
 
         {/* FADE SIDES */}
-        <div className="absolute left-0 top-0 z-20 w-40 h-full bg-gradient-to-r from-[#050505] to-transparent" />
-        <div className="absolute right-0 top-0 z-20 w-40 h-full bg-gradient-to-l from-[#050505] to-transparent" />
+        <div className="absolute left-0 top-0 z-20 w-40 h-full bg-gradient-to-r from-[#050505] to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 z-20 w-40 h-full bg-gradient-to-l from-[#050505] to-transparent pointer-events-none" />
 
-        <motion.div
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "linear",
-          }}
+        <div
+          ref={scrollContainerRef}
           className="flex gap-8 w-max"
         >
           {duplicatedProjects.map((project, i) => (
-            <motion.div
+            <div
               key={i}
-              custom={i}
-              variants={cardVariant}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: false }}
-              whileHover={{
-                y: -6,
-                scale: 1.01,
-              }}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
               onClick={() => setSelectedProject(project)}
-              className="group relative w-[360px] cursor-pointer overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] backdrop-blur-xl transition"
+              className="project-card group relative w-[360px] cursor-pointer rounded-[28px] border border-white/10 bg-white/[0.04] backdrop-blur-xl transition-colors hover:border-[#00ff88]/30 [transform-style:preserve-3d] perspective-[1200px]"
             >
 
               {/* IMAGE */}
-              <div className="relative h-[240px] overflow-hidden">
-                <motion.img
+              <div className="relative h-[240px] overflow-hidden rounded-t-[28px]">
+                <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.6 }}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
               </div>
 
               {/* CONTENT */}
-              <div className="p-6">
+              <div className="p-6 [transform:translateZ(30px)]">
 
                 {/* TAGS */}
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -153,13 +180,13 @@ const Projects = () => {
               </div>
 
               {/* HOVER GLOW */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-[radial-gradient(circle_at_center,rgba(0,255,136,0.12),transparent_70%)]" />
-            </motion.div>
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-[radial-gradient(circle_at_center,rgba(0,255,136,0.12),transparent_70%)] pointer-events-none rounded-[28px]" />
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
-      {/* MODAL */}
+      {/* MODAL (Keep Framer Motion for exit animations) */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -184,7 +211,7 @@ const Projects = () => {
               {/* CLOSE */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 border border-white/10 flex items-center justify-center hover:bg-[#00ff88] hover:text-black transition"
+                className="absolute top-4 right-4 w-9 h-9 z-10 rounded-full bg-black/60 border border-white/10 flex items-center justify-center hover:bg-[#00ff88] hover:text-black transition"
               >
                 <X size={16} />
               </button>
@@ -194,6 +221,7 @@ const Projects = () => {
                 <img
                   src={selectedProject.image}
                   className="w-full h-full object-cover"
+                  alt={selectedProject.title}
                 />
               </div>
 
@@ -208,11 +236,11 @@ const Projects = () => {
                 </p>
 
                 <div className="flex gap-3 mt-6">
-                  <a className="px-4 py-2 bg-[#00ff88] text-black rounded-full text-sm">
+                  <a href={selectedProject.live} className="px-4 py-2 bg-[#00ff88] text-black rounded-full text-sm">
                     Live
                   </a>
 
-                  <a className="px-4 py-2 border border-white/10 text-white rounded-full text-sm flex items-center gap-2">
+                  <a href={selectedProject.github} className="px-4 py-2 border border-white/10 text-white rounded-full text-sm flex items-center gap-2">
                     <FaGithub /> GitHub
                   </a>
                 </div>
